@@ -6,6 +6,10 @@ checkpoints/
 *.bin
 *.onnx
 
+# ── Allow web/ assets for GitHub Pages ──────────────────────
+!web/*.onnx
+!web/*.json
+
 # ── Python ──────────────────────────────────────────────────
 venv/
 env/

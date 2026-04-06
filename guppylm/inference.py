@@ -90,8 +90,6 @@ class GuppyInference:
         for msg in messages:
             role = msg.get("role", "user")
             content = msg.get("content") or ""
-            if role == "system":
-                continue
             parts.append(f"<|im_start|>{role}\n{content}<|im_end|>")
         parts.append("<|im_start|>assistant\n")
         return "\n".join(parts)
@@ -114,17 +112,14 @@ def main():
         return
 
     print("\nGuppy Chat (type 'quit' to exit)")
-    msgs = []
     while True:
         inp = input("\nYou> ").strip()
         if inp.lower() in ("quit", "exit", "q"):
             break
-        msgs.append({"role": "user", "content": inp})
-        result = engine.chat_completion(msgs)
+        result = engine.chat_completion([{"role": "user", "content": inp}])
         msg = result["choices"][0]["message"]
         if msg.get("content"):
             print(f"Guppy> {msg['content']}")
-        msgs.append(msg)
 
 
 if __name__ == "__main__":
