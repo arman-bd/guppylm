@@ -137,6 +137,7 @@ You can also invoke chat with a single prompt, and exit after the response:
 python -m guppylm chat --prompt "tell me a joke"
 ```
 
+Optional: if you want to publish a portable model to Ollama, see [`docs/publish-ollama-portable.md`](docs/publish-ollama-portable.md).
 
 ---
 

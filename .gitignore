@@ -5,6 +5,7 @@ checkpoints/
 *.pt
 *.bin
 *.onnx
+artifacts/
 
 # ── Allow web/ assets for GitHub Pages ──────────────────────
 !docs/*.onnx
