@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Build and push a portable GuppyLM Ollama model from a fresh clone.
+"""Build and push a GuppyLM Ollama model from a fresh clone.
 
 This script performs interactive preflight checks, downloads required model files,
-exports portable GGUF, creates an Ollama model, runs a smoke test, and optionally
-pushes to ollama.com under <username>/<model>.
+exports GGUF, creates an Ollama model, runs a smoke test, and optionally pushes
+to ollama.com under <username>/<model>.
 """
 
 from __future__ import annotations
@@ -225,12 +225,12 @@ def write_modelfile() -> None:
     )
 
 
-def build_portable_gguf(py: Path) -> None:
+def build_gguf(py: Path) -> None:
     info("Preparing canonical tensors")
     run(
         [
             str(py),
-            str(REPO_ROOT / "tools" / "prepare_guppylm_for_gguf.py"),
+            str(REPO_ROOT / "tools" / "prepare_gguf.py"),
             "--checkpoint",
             str(HF_MODEL_DIR / "pytorch_model.bin"),
             "--config",
@@ -241,11 +241,11 @@ def build_portable_gguf(py: Path) -> None:
         check=True,
     )
 
-    info("Writing portable GGUF (gpt2 arch)")
+    info("Writing GGUF")
     run(
         [
             str(py),
-            str(REPO_ROOT / "tools" / "write_guppylm_gguf.py"),
+            str(REPO_ROOT / "tools" / "export_gguf.py"),
             "--canonical",
             str(GGUF_PREP_DIR / "canonical_state.pt"),
             "--metadata",
@@ -286,12 +286,11 @@ def print_preflight() -> None:
     print("\nPreflight status")
     print(f"- Platform: {platform.system()} {platform.release()}")
     print(f"- Repo root: {REPO_ROOT}")
-    print(f"- llama.cpp: not required for portable mode")
     print(f"- Required model files dir: {HF_MODEL_DIR}")
 
 
 def main() -> None:
-    print("GuppyLM -> Ollama (portable) publisher")
+    print("GuppyLM -> Ollama publisher")
     print_preflight()
 
     py = ensure_venv()
@@ -309,7 +308,7 @@ def main() -> None:
     remote_model = prompt("Remote model name", "guppylm")
 
     info("Starting build pipeline")
-    build_portable_gguf(py)
+    build_gguf(py)
     create_and_test_ollama_model(local_name)
 
     url = push_model(local_name, username, remote_model)
