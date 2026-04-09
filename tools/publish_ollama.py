@@ -282,11 +282,44 @@ def push_model(local_name: str, namespace: str, model_name: str) -> str:
     return f"https://ollama.com/{remote_name}"
 
 
+def check_ollama_installed() -> str:
+    """Return the ollama binary path, or empty string if not found."""
+    return shutil.which("ollama") or ""
+
+
+def get_ollama_version() -> str:
+    """Return a short version string, or empty string on failure."""
+    try:
+        proc = subprocess.run(
+            ["ollama", "--version"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        if proc.returncode == 0:
+            return (proc.stdout or proc.stderr).strip().splitlines()[0]
+    except Exception:
+        pass
+    return ""
+
+
 def print_preflight() -> None:
     print("\nPreflight status")
     print(f"- Platform: {platform.system()} {platform.release()}")
     print(f"- Repo root: {REPO_ROOT}")
     print(f"- Required model files dir: {HF_MODEL_DIR}")
+
+    ollama_bin = check_ollama_installed()
+    if ollama_bin:
+        version = get_ollama_version()
+        version_str = f" ({version})" if version else ""
+        print(f"- Ollama: {ollama_bin}{version_str}")
+    else:
+        print("- Ollama: NOT FOUND")
+        fail(
+            "`ollama` is not installed or not in PATH.\n"
+            "  Install it from https://ollama.com/download and re-run this script."
+        )
 
 
 def main() -> None:
