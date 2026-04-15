@@ -107,7 +107,7 @@ Runs entirely in your browser via WebAssembly. Downloads a quantized ONNX model 
 
 Downloads the pre-trained model from HuggingFace and lets you chat. Just run all cells.
 
-### Train your own
+### Train your own on Colab
 
 [![Open in Colab](https://img.shields.io/badge/Train_in-Colab-F9AB00?logo=googlecolab)](https://colab.research.google.com/github/arman-bd/guppylm/blob/main/train_guppylm.ipynb)
 
@@ -115,10 +115,65 @@ Downloads the pre-trained model from HuggingFace and lets you chat. Just run all
 2. **Run all cells** — downloads dataset, trains tokenizer, trains model, tests it
 3. Upload to HuggingFace or download locally
 
+### Train your own on your own computer
+
+Essentially, follow the Colab notebook line-by-line, but on your own machine.
+
+The following instructions install dependencies in a way specific to NixOS/Nixpkgs. Install Python and other dependencies in whatever manner your Linux distribution uses.
+
+Install dependencies:
+
+    nix-shell -p python3 -p python313Packages.pip -p stdenv.cc.cc.lib
+
+Create a [Python virtual environment](https://docs.python.org/3/library/venv.html):
+
+    python -m venv .venv
+    source .venv/bin/activate
+
+Inside the virtual environment, install dependencies:
+
+    pip install -r requirements.txt
+
+Prepare the dataset:
+
+    export CCLIBPATH=$(nix-instantiate --eval-only --expr '(import <nixpkgs> {}).stdenv.cc.cc.lib.outPath' --raw)
+    export LD_LIBRARY_PATH=${CCLIBPATH}/lib:$LD_LIBRARY_PATH
+    python -m guppylm prepare
+
+Expected output starts with `Generating 60000 samples...`.
+
+Pretrain, still from inside the virtual environment:
+
+    python -m guppylm train
+
+Expected output:
+
+```
+Device: cpu
+GuppyLM: 8,726,016 params (8.7M)
+Train: 57,000, Eval: 3,000
+
+Training for 10000 steps...
+  Step |         LR |      Train |       Eval |     Time
+--------------------------------------------------------
+     0 |   0.000000 |     8.5154 |         -- |     7.7s
+   100 |   0.000150 |     5.7558 |         -- |   410.1s
+   200 |   0.000300 |     3.2345 |         -- |   800.0s
+   200 |   0.000300 |     4.4951 |     2.7429 |   843.9s
+  -> Best model (eval=2.7429)
+   300 |   0.000300 |     2.5016 |         -- |  1230.9s
+   400 |   0.000300 |     2.0131 |         -- |  1607.8s
+   400 |   0.000300 |     2.2573 |     1.7114 |  1650.2s
+  -> Best model (eval=1.7114)
+...
+Done! 2768s, best eval: 0.3845
+```
+
+As soon as it saves at least one checkpoint, you can start chatting with the model.
+
 ### Chat locally
 
 ```bash
-pip install torch tokenizers
 python -m guppylm chat
 ```
 
