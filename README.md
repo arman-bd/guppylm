@@ -204,3 +204,5 @@ docs/
 ## License
 
 MIT
+
+<!-- GitAds-Verify: UW3VONXNDRGEZ2O7RF4N2PFHSUR3DUJB -->
