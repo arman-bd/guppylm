@@ -117,10 +117,19 @@ Downloads the pre-trained model from HuggingFace and lets you chat. Just run all
 
 ### Chat locally
 
+First set up a Python virtual environment:
+
 ```bash
-pip install torch tokenizers
-python -m guppylm chat
+python3 -m venv venv
+. venv/bin/activate
 ```
+
+then:
+
+```bash
+make chat
+```
+
 
 ```
 You> the cat is looking at you
@@ -137,6 +146,21 @@ You can also invoke chat with a single prompt, and exit after the response:
 python -m guppylm chat --prompt "tell me a joke"
 ```
 
+Finally type `exit` to end the chat and then:
+
+```bash
+deactivate
+```
+
+to leave the Python virtual environment you created above.
+
+Run
+
+```bash
+make clean
+```
+
+to clean up the virtual environment with all the dependencies to recover the disk space taken by guppy's dependencies.
 
 ---
 
